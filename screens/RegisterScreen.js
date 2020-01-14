@@ -11,6 +11,7 @@ export default class RegisterScreen extends React.Component {
   }
 
   state = {
+    name: '',
     email: '',
     password: '',
     passwordTwo: '',
@@ -22,9 +23,14 @@ export default class RegisterScreen extends React.Component {
     const { password, passwordTwo } = this.state;
 
     if (password === passwordTwo && password != '') {
-      firebase.auth().createUserWithEmailAndPassword(identitiant, password).catch(error => this.setState({ errorMessage: error.message }))
+      firebase.auth().createUserWithEmailAndPassword(identitiant, password)
+        .then(userCredentials => {
+          return userCredentials.user.updateProfile({
+            displayName: this.state.name
+          })
+        }).catch(error => this.setState({ errorMessage: error.message }))
     } else {
-      this.setState({errorMessage: 'Mot de passe non cohérent ou vide'})
+      this.setState({ errorMessage: 'Mot de passe non cohérent ou vide' })
     }
   }
 
@@ -50,6 +56,10 @@ export default class RegisterScreen extends React.Component {
 
           <View style={styles.form}>
             <View style={{ marginTop: 32 }}>
+              <Text style={styles.formTitle}>Pseudo</Text>
+              <TextInput style={styles.input} onChangeText={name => this.setState({ name })} value={this.state.name} autoCapitalize='none' />
+            </View>
+            <View style={{ marginTop: 32 }}>
               <Text style={styles.formTitle}>Mail</Text>
               <TextInput style={styles.input} onChangeText={email => this.setState({ email })} value={this.state.email} autoCapitalize='none' />
             </View>
@@ -67,13 +77,13 @@ export default class RegisterScreen extends React.Component {
             <Text style={{ fontWeight: '500', color: '#FFF', textTransform: 'uppercase' }}>Créer un compte</Text>
           </TouchableOpacity>
 
-          <View style={{ alignSelf: 'center', marginTop: 32, marginHorizontal: 35}}>
+          <View style={{ alignSelf: 'center', marginTop: 32, marginHorizontal: 35 }}>
             <Text style={{ color: '#2E3439', fontSize: 13, textAlign: 'center' }}>
               En cliquant sur 'Créer un compte' vous vous inscrivez sur OverStats
             </Text>
           </View>
 
-          <View style={{borderBottomColor: '#2E3439', borderBottomWidth: 1, marginTop: 26, marginHorizontal: 90}} />
+          <View style={{ borderBottomColor: '#2E3439', borderBottomWidth: 1, marginTop: 26, marginHorizontal: 90 }} />
 
           <TouchableOpacity style={{ alignSelf: 'center', marginTop: 32, marginBottom: 32 }} onPress={() => this.props.navigation.goBack()}>
             <Text style={{ color: '#2E3439', fontSize: 13 }}>
